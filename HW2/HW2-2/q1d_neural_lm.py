@@ -32,7 +32,7 @@ def load_vocab_embeddings(path=VOCAB_EMBEDDING_PATH):
 
 def load_data_as_sentences(path, word_to_num):
     """
-    Conv:erts the training data to an array of integer arrays.
+    Converts the training data to an array of integer arrays.
       args: 
         path: string pointing to the training data
         word_to_num: A dictionary from string words to integers
@@ -76,14 +76,20 @@ def int_to_one_hot(number, dim):
 
 
 def lm_wrapper(in_word_index, out_word_index, num_to_word_embedding, dimensions, params):
-
+    input_dim, hidden_dim, output_dim = dimensions
     data = np.zeros([BATCH_SIZE, input_dim])
     labels = np.zeros([BATCH_SIZE, output_dim])
-
     # Construct the data batch and run you backpropogation implementation
-    ### YOUR CODE HERE
-    raise NotImplementedError
-    ### END YOUR CODE
+    
+    rand_word_indices = np.random.randint(0, len(in_word_index), BATCH_SIZE)
+    num_to_vec_embedding = np.array(num_to_word_embedding)
+    in_words_nums = np.array(in_word_index)[rand_word_indices]
+    data = num_to_vec_embedding[in_words_nums]
+    out_words_nums = np.array(out_word_index)[rand_word_indices]
+    labels = np.array([int_to_one_hot(x, output_dim) for x in out_words_nums])
+    
+    labels = out_word_index[rand_word_indices]
+    cost, grad = forward_backward_prop(data, labels, params, dimensions)
 
     cost /= BATCH_SIZE
     grad /= BATCH_SIZE
@@ -100,10 +106,12 @@ def eval_neural_lm(eval_data_path):
     num_of_examples = len(in_word_index)
 
     perplexity = 0
-    ### YOUR CODE HERE
-    raise NotImplementedError
-    ### END YOUR CODE
-
+    num_to_vec_embedding = np.array(num_to_word_embedding)
+    data = num_to_vec_embedding[in_word_index]
+    labels = out_word_index
+    for i in range(num_of_examples):
+        perplexity += np.log(forward(data[i], labels[i], params, dimensions))
+    perplexity = 2 ** (-perplexity / num_of_examples)
     return perplexity
 
 

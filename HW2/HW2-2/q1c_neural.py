@@ -27,7 +27,6 @@ def forward(data, label, params, dimensions):
     b2 = np.reshape(params[ofs:ofs + Dy], (1, Dy))
 
     # Compute the probability
-    ### YOUR CODE HERE: forward propagation
     h = sigmoid(np.dot(data, W1) + b1)
     y_kova = softmax(np.dot(h, W2) + b2)
     return y_kova[label]
